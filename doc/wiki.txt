@@ -1,0 +1,368 @@
+*wiki.txt*                  Wiki                                         *wiki*
+
+                            Wiki MANUAL
+
+1. About wiki                                   |wiki-about|
+2. Quick Start                                     |wiki-quickstart|
+3. Default Mappings                                |wiki-default-mappings|
+4. Plug Mappings                                   |wiki-plug-mappings|
+5. Commands                                        |wiki-commands|
+6. Options                                         |wiki-options|
+6. Events                                          |wiki-events|
+7. Configuration Example                           |wiki-example|
+8. Changelog                                       |wiki-changelog|
+9. Contribute                                      |wiki-contribute|
+A. License                                         |wiki-license|
+
+=============================================================================
+ABOUT wiki                                                   *wiki-about*
+
+Wiki provides a minimal set of common features for maintaining a wiki:
+
+  - Navigation
+  - Link/Page Creation
+  - Todo lists
+  - Tags
+
+Syntax/Formatting is left to third-parties; Markdown is assumed by default,
+but it should be entirely configurable.
+
+|filetype| is not modified by wiki; instead, buffer-local mappings are added
+when editing files under locations defined as 'wiki roots', and/or matching
+some patterns.
+
+For navigation, links are expected to point at file names, or to directory
+names containing an index file (eg. "index.md", cf. |g:wiki_index|).
+Eg.
+
+  in Foo.md:
+>
+  This is a link: [MyBar](bar)
+<
+This can point at a file "./bar", or "./bar.md", or "./bar/index.md"
+Lookup order can be configured (cf. |g:wiki_lookup_order|), as well as
+location for new files (|g:wiki_create_type|). You can also manually
+insert the link syntax and set the url part to what you want, eg. for special
+cases; Wiki will then create the path/file when following the link.
+
+=============================================================================
+QUICK START                                                *wiki-quickstart*
+
+1. Install the plugin Eg. with Pathogen:
+>
+   cd ~/.vim/bundle && git clone https://github.com/croyleje/vim-wiki
+<
+   or using vim8 package management:
+>
+   cd ~/.vim/pack/std/start && git clone https://github.com/croyleje/vim-wiki
+<
+2. Set |g:wiki_roots| in vimrc Eg.:
+>
+   let g:wiki_roots = ['~/vimwiki/']
+<
+
+3. Set |g:wiki_default_maps| in vimrc to activate default maps:
+>
+   let maplocalleader = "\<F7>"
+   let g:wiki_default_maps = 1
+<
+4. Edit wiki files in your wiki root, using the default maps described
+   below.
+
+=============================================================================
+DEFAULT MAPPINGS                                     *wiki-default-mappings*
+
+<LocalLeader><Return>
+  Open link under cursor into current window.
+
+<LocalLeader>s
+  Open link under cursor into split window.
+
+<LocalLeader>v
+  Open link under cursor into vertical split window.
+
+<LocalLeader>u
+  Open file "higher in hierarchy" into current window.
+
+<LocalLeader>n
+  Move cursor to next link in buffer.
+
+<LocalLeader>p
+  Move cursor to previous link in buffer.
+
+<LocalLeader><Space>
+  Toggle state of checkbox on current line.
+  A checkbox is pair of brackets '[ ]' with a space or an 'X' inside it,
+  indicating item is still to be done or is completed.
+
+<LocalLeader>T
+  Generate tags.
+  By default, tags are series of words within colon pairs, on a line
+  of their own, similar to vimwiki. Eg.:
+>
+    :tag1:tag2:tag3:
+<
+  Tag format is configurable with the |g:wiki_tag_start| and
+  |g:wiki_tag_end| option.
+
+=============================================================================
+PLUG MAPPINGS                                           *wiki-plug-mappings*
+
+<Plug>(wikiFollowLink)
+<Plug>(wikiFollowLinkSplit)
+<Plug>(wikiFollowLinkVSplit)
+  Open link under cursor into current/split/vsplit window.
+
+<Plug>(wikiGoUp)
+<Plug>(wikiGoUpSplit)
+<Plug>(wikiGoUpVSplit)
+  Open file "higher in hierarchy" into current/split/vsplit window.
+
+<Plug>(wikiPrevLink)
+<Plug>(wikiNextLink)
+  Move cursor to previous/next link in buffer.
+
+<Plug>(wikiToggleListItem)
+  Toggle state of checkbox on current line.
+  Cf. `<LocalLeader><Space>`
+
+<Plug>(wikiTags)
+  Generate tags.
+  Cf. `<LocalLeader>T`
+
+=============================================================================
+COMMANDS                                                     *wiki-commands*
+
+:WikiTags [dir]                                               *:WikiTags*
+  Generate tags file in given dir, or in wiki root if no argument
+  is provided.
+  In case there is no configured root, fall back on current working dir.
+
+=============================================================================
+OPTIONS                                                       *wiki-options*
+
+g:wiki_wiki_roots                                     *g:wiki_wiki_roots*
+  List of directories containing wiki.
+  Buffers for files under a wiki root will have local mappings set,
+  and tags will be created under the root if not set otherwise.
+  Default: []
+
+g:wiki_wiki_patterns                               *g:wiki_wiki_patterns*
+  List of regexes matching wiki files.
+  Set buffer local mappings, like |g:wiki_roots| does.
+  Default: []
+
+g:wiki_roots                                               *g:wiki_roots*
+  Alias for |g:wiki_wiki_roots|
+
+g:wiki_patterns                                         *g:wiki_patterns*
+  Alias for |g:wiki_wiki_patterns|
+
+g:wiki_ext                                                   *g:wiki_ext*
+  Extension of wiki files.
+  Default: .md
+
+g:wiki_index                                               *g:wiki_index*
+  Name of index files.
+  Default: index.md
+
+g:wiki_follow_action                               *g:wiki_follow_action*
+  Default action when following links.
+  Default: edit
+
+g:wiki_create_action                               *g:wiki_create_action*
+  Default action when creating new links.
+  Default: edit
+
+g:wiki_mkdir_prompt                                 *g:wiki_mkdir_prompt*
+  Set to 1 to get a confirmation prompt before creating dirs.
+  Default: 0
+
+g:wiki_ask_if_noindex                             *g:wiki_ask_if_noindex*
+  Set to 1 to get a menu with dir content when going up in a directory
+  with no index file. Ignore dir and keep searching upwards if 0.
+  Default: 0
+
+g:wiki_todo                                                 *g:wiki_todo*
+  Character indicating that a todo list item is still to be done.
+  Default: <Space>
+
+g:wiki_done                                                 *g:wiki_done*
+  Character indicating that a todo list item is completed.
+  Default: X
+
+g:wiki_default_maps                                 *g:wiki_default_maps*
+  Set to 1 to activate default buffer-local maps.
+  Default: 0
+
+g:wiki_dirsep                                             *g:wiki_dirsep*
+  Directory separator.
+  Default: /
+
+g:wiki_lookup_order                                 *g:wiki_lookup_order*
+  List of location to look up when searching upwards.
+  The default first tries the link as is, then it tries adding the
+  configured extension, and finally it tries looking for an index file
+  in a subdir with that name.
+  Those are all the recognized options; you can reorder them
+  or delete some.
+  Default: ["raw", "ext", "subdir"]
+
+g:wiki_create_type                                   *g:wiki_create_type*
+  Set the type of file when creating new links.
+  Can be one of "raw", "ext" or "subdir" (Cf. |g:wiki_lookup_order|).
+  Set to empty string to be prompted with a menu.
+  Default: ext
+
+g:wiki_link_regex                                     *g:wiki_link_regex*
+  Regex used to lookup prev/next link in current buffer.
+  Default: regex matching markdown link (check source for details)
+
+g:wiki_link_url_regex                             *g:wiki_link_url_regex*
+  Regex used to extract the url part from wiki links.
+  Default: regex matching markdown link (check source for details)
+
+g:wiki_use_word_regex                             *g:wiki_use_word_regex*
+  Use a regex to find the word under the cursor (use |<cword>| otherwise).
+  Default: 0
+
+g:wiki_use_regex                                      *g:wiki_word_regex*
+  Regex used to find the word under the cursor, when creating a new page.
+  Default: [-+0-9A-Za-z_]*
+
+g:wiki_tag_start                                       *g:wiki_tag_start*
+  Part of the regex used to tell ctags what wiki tags look like.
+  This is the start of a tag list: `:foo:bar:baz:`
+  Default: colon
+
+g:wiki_tag_end                                           *g:wiki_tag_end*
+  Part of the regex used to tell ctags what wiki tags look like.
+  This is the end of a tag (and also the start of the next one, if many).
+  Default: colon
+
+g:wiki_link_fmt                                         *g:wiki_link_fmt*
+  Printf pattern used to insert link code when creating new links.
+  Note: takes three parameters, "name, link, name", so one of them should
+  have length zero "%.0s" to be ignored. This is a hack to replace
+  positional printf parameters (eg. "%2$"), not implemented in
+  vim's printf.
+  Default: [%s](%s)%.0s
+
+g:wiki_noauto                                             *g:wiki_noauto*
+  Set to 1 to deactivate autocommands checking if buffer should get
+  wiki settings. User should then set them by other means, eg. in
+  some after/ftplugin file.
+  Default: 0
+
+g:wiki_conceal_markdown_url                 *g:wiki_conceal_markdown_url*
+  Set to 0 to always show url in markdown links
+  Default: 1
+
+g:wiki_space_replacement                       *g:wiki_space_replacement*
+  String that will replace spaces when creating page slugs.
+  Default: _
+
+g:wiki_targetsdict_func                         *g:wiki_targetsdict_func*
+  Name of a function that will return a dict with extra link targets,
+  in addition to the default ones ("raw", "ext", "subdir").
+  If set, it is necessary to define |g:wiki_lookup_order| to take it
+  into account. See also |g:wiki_create_type|.
+  Cf. below for an example.
+  Default: none
+
+Example:
+>
+  let g:wiki_targetsdict_func = 'mywiki#TargetsDict'
+
+  function! mywiki#TargetsDict(name) abort
+    let ret = {}
+    let ts_name = strftime('%Y-%m-%dT%H:%M').'_'.a:name
+    if strridx(ts_name, '.md') != len(ts_name) - 3
+      let ts_name .= '.md'
+    endif
+    let ret['ts'] = ts_name
+    return ret
+  endfun
+  let g:wiki_lookup_order = ['raw', 'ext', 'subdir', 'ts']
+  let g:wiki_create_type = 'ts'
+<
+
+=============================================================================
+EVENTS                                                         *wiki-events*
+
+A 'Wiki#User#setup' event is triggered when a buffer is set up for
+wiki. This lets users add extra configuration if needed.
+
+=============================================================================
+CONFIGURATION EXAMPLE                                         *wiki-example*
+
+In .vim/after/ftplugin/markdown.vim:
+>
+  if !get(g:, 'mywikisetup_loaded', 0)
+    call mywiki#Load()
+    let g:mywikisetup_loaded = 1
+  endif
+<
+In .vim/autoload/mywiki.vim:
+>
+  let g:wiki_wiki_roots    = ['~/vimwiki']
+  let g:wiki_wiki_patterns = ['/wiki/']
+  let g:wiki_default_maps  = 1
+
+  " mywiki#Load {{{1
+  function! mywiki#Load() abort
+    if !get(g:, 'wiki_loaded', 0)
+      packadd vim-wiki
+      call wiki#CheckBuffer(expand('%:p'))
+    endif
+  endfun
+
+  " mywiki#SetupBuffer {{{1
+  function! mywiki#SetupBuffer() abort
+    nmap  <buffer>  zl                    <Plug>(wikiFollowLink)
+    nmap  <buffer>  zh                    <Plug>(wikiGoUp)
+    xn    <buffer>  <LocalLeader>c        <Esc>m`g'<O```<Esc>g'>o```<Esc>``
+    nmap  <buffer><silent> <LocalLeader>i :let &l:cocu = (&l:cocu==""
+                                           \ ? "n" : "")<cr>
+    setl sw=2
+    setl cole=2
+  endfun
+
+  " augroup Wiki {{{1
+  augroup Wiki
+    au!
+    autocmd User setup
+          \ call mywiki#SetupBuffer()
+  augroup END
+<
+=============================================================================
+CHANGELOG                                                   *wiki-changelog*
+
+[1.0] - 2018-07-20
+  - Initial release
+[1.0.1] - 2019-03-02
+  - Handling spaces in page names (merge from @BonaBeavis, +added option)
+[1.0.2] - 2019-04-23
+  - Add `g:wiki_roots` and `g:wiki_patterns` aliases
+  - Creating a link from a word inside brackets `[Foo]` does not add an extra
+    set of brackets for markdown links.
+[1.0.3] - 2020-02-04
+  - Fix tags
+  - Add `wiki_tag_start` and `wiki_tag_end` options
+  - Remove `wiki_tag_regex`
+[1.0.4] - 2020-07-09
+  - Add `g:wiki_use_word_regex` and `g:wiki_word_regex` options
+[1.0.5] - 2020-08-16
+  - Add `g:wiki_targetsdict_func` option
+
+=============================================================================
+CONTRIBUTE                                                 *wiki-contribute*
+
+Contribute on [Github](https://github.com/croyleje/vim-wiki)
+
+=============================================================================
+LICENSE                                                       *wiki-license*
+
+[Attribution-ShareAlike 4.0 Int.](https://creativecommons.org/licenses/by-sa/4.0/)
+
+ vim: set expandtab sts=2 ts=2 sw=2 tw=78 ft=help norl:
