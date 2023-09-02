@@ -1,8 +1,8 @@
-*wiki.txt*                  Wiki                                         *wiki*
+*wiki.txt*                    Wiki                                         *wiki*
 
                             Wiki MANUAL
 
-1. About wiki                                   |wiki-about|
+1. About wiki                                      |wiki-about|
 2. Quick Start                                     |wiki-quickstart|
 3. Default Mappings                                |wiki-default-mappings|
 4. Plug Mappings                                   |wiki-plug-mappings|
@@ -142,21 +142,28 @@ COMMANDS                                                     *wiki-commands*
 OPTIONS                                                       *wiki-options*
 
 g:wiki_wiki_roots                                     *g:wiki_wiki_roots*
+  ***DEPRECATED***
   List of directories containing wiki.
   Buffers for files under a wiki root will have local mappings set,
   and tags will be created under the root if not set otherwise.
   Default: []
 
 g:wiki_wiki_patterns                               *g:wiki_wiki_patterns*
+  ***DEPRECATED***
   List of regexes matching wiki files.
   Set buffer local mappings, like |g:wiki_roots| does.
   Default: []
 
 g:wiki_roots                                               *g:wiki_roots*
-  Alias for |g:wiki_wiki_roots|
+  List of directories containing wiki.
+  Buffers for files under a wiki root will have local mappings set,
+  and tags will be created under the root if not set otherwise.
+  Default: []
 
 g:wiki_patterns                                         *g:wiki_patterns*
-  Alias for |g:wiki_wiki_patterns|
+  List of regexes matching wiki files.
+  Set buffer local mappings, like |g:wiki_roots| does.
+  Default: []
 
 g:wiki_ext                                                   *g:wiki_ext*
   Extension of wiki files.
@@ -305,8 +312,8 @@ In .vim/after/ftplugin/markdown.vim:
 <
 In .vim/autoload/mywiki.vim:
 >
-  let g:wiki_wiki_roots    = ['~/vimwiki']
-  let g:wiki_wiki_patterns = ['/wiki/']
+  let g:wiki_roots    = ['~/vimwiki']
+  let g:wiki_patterns = ['/wiki/']
   let g:wiki_default_maps  = 1
 
   " mywiki#Load {{{1

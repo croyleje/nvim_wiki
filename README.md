@@ -1,7 +1,7 @@
-Vim-Wiki
+Nvim-Wiki
 ------------
 
-Wiki is a minimal wiki: it provides
+Nvim-Wiki is a minimal wiki plugin: it provides
 a minimalist set of features to:
 
 - Navigate pages (follow links, go back)
@@ -18,21 +18,6 @@ then that's why Wiki was created <'((>< .
 Usage
 ------
 See [the documentation](doc/wiki.txt).
-
-FAQ
-----
-
-*What is it?*
-In a nutshell, this plugin lets you "follow" textual links in markdown files,
-the same way you can `gf` on paths in vim. It also lets you easily turn words
-into links. Plus a few other goodies.
-
-*Why don't you use vimwiki?*
-Because it's much bigger and more feature-full than what I need. In other words,
-great but overkill for me.
-
-*Is is subtle, modern and elegant?*
-As much as an orange life jacket.
 
 Installation
 -------------

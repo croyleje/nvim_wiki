@@ -2,9 +2,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-"------------
-" Debug {{{1
-"------------
+" debug
 let g:wiki_debug = 1
 if 0
 append
@@ -16,10 +14,7 @@ append
 endif
 
 
-"----------------
-" Variables {{{1
-"----------------
-
+" variables
 let s:dirsep = get(g:, 'wiki_dirsep', '/')
 let s:follow = get(g:, 'wiki_follow_action', 'edit')
 let s:create = get(g:, 'wiki_create_action', 'edit')
@@ -27,6 +22,8 @@ let s:ext    = get(g:, 'wiki_ext', '.md')
 let s:index  = get(g:, 'wiki_index', 'index'.s:ext)
 let s:todo   = get(g:, 'wiki_todo', ' ')
 let s:done   = get(g:, 'wiki_done', 'X')
+
+" FIX: removed duplicate code wiki_wiki
 let s:wiki_patterns  = get(g:, 'wiki_wiki_patterns',
                         \ get(g:, 'wiki_patterns', []))
 let s:wiki_roots     = get(g:, 'wiki_wiki_roots',
@@ -38,23 +35,21 @@ let s:create_type    = get(g:, 'wiki_create_type', 'ext')
 let s:space_replacement = get(g:, 'wiki_space_replacement', '_')
 
 
-"-----------------------
-" Public Functions {{{1
-"-----------------------
+" exposded functions
 
-" wiki#NextLink {{{2
+" wiki#NextLink
 function! wiki#NextLink() abort
   let link_regex = get(g:, 'wiki_link_regex', '\[[^]]*\]([^)]\+)')
   call search(link_regex)
 endfun
 
-" wiki#PrevLink {{{2
+" wiki#PrevLink
 function! wiki#PrevLink() abort
   let link_regex = get(g:, 'wiki_link_regex', '\[[^]]*\]([^)]\+)')
   call search(link_regex, 'b')
 endfun
 
-" wiki#ToggleListItem {{{2
+" wiki#ToggleListItem
 function! wiki#ToggleListItem() abort
   let line = getline('.')
   let box  = matchstr(line,
@@ -70,7 +65,7 @@ function! wiki#ToggleListItem() abort
   endif
 endfun
 
-" wiki#SetupBuffer {{{2
+" wiki#SetupBuffer
 function! wiki#SetupBuffer() abort
   "call <Sid>Dbg("Setting up buffer")
   if get(g:, 'wiki_default_maps', 0)
@@ -95,7 +90,7 @@ function! wiki#SetupBuffer() abort
   endif
 endfun
 
-" wiki#CheckBuffer {{{2
+" wiki#CheckBuffer
 function! wiki#CheckBuffer(file) abort
   if s:IsUnderWikiRoot(a:file) || s:IsMatchingWikiPattern(a:file)
     call wiki#SetupBuffer()
@@ -104,7 +99,7 @@ function! wiki#CheckBuffer(file) abort
   "call <Sid>Dbg("nothing to setup")
 endfun
 
-" wiki#GetCurrentLink {{{2
+" wiki#GetCurrentLink
 function! wiki#GetCurrentLink() abort
   let link_url_regex = get(g:, 'wiki_link_url_regex',
         \ '\[[^]]*\](\zs[^)]\+\ze)' )
@@ -117,7 +112,7 @@ function! wiki#GetCurrentLink() abort
   return link
 endfun
 
-" wiki#GetCurrentWord {{{2
+" wiki#GetCurrentWord
 function! wiki#GetCurrentWord() abort
   let word_regex = get(g:, 'wiki_word_regex',
         \ '[-+0-9A-Za-z_]\+' )
@@ -130,7 +125,7 @@ function! wiki#GetCurrentWord() abort
   return word
 endfun
 
-" wiki#FollowLink {{{2
+" wiki#FollowLink
 function! wiki#FollowLink(...) abort
   let options = a:0 ? a:1 : {}
   let follow  = get(options, 'action', s:follow)
@@ -206,7 +201,7 @@ function! wiki#FollowLink(...) abort
   exe create finaltarget
 endfun
 
-" wiki#GoUp {{{2
+" wiki#GoUp
 function! wiki#GoUp(...) abort
   let options     = a:0 ? a:1 : {}
   let action      = get(options, 'action', s:follow)
@@ -297,7 +292,7 @@ function! wiki#GoUp(...) abort
   exe action finaltarget
 endfun
 
-" wiki#Tags {{{2
+" wiki#Tags
 " Arg: dir where to save tags file
 function! wiki#Tags(...) abort
   let tagstart = get(g:, 'wiki_tag_start', ':')
@@ -351,7 +346,7 @@ endfun
 " Private Functions {{{1
 "------------------------
 
-" s:GetPossibleTargetsDict {{{2
+" s:GetPossibleTargetsDict
 function! s:GetPossibleTargetsDict(target) abort
   let targetsdict_func = get(g:, 'wiki_targetsdict_func', '')
   let target_info = s:GetTargetInfo(a:target)
@@ -362,7 +357,7 @@ function! s:GetPossibleTargetsDict(target) abort
   return ret
 endfun
 
-" s:GetPossibleTargetsOrderedList {{{2
+" s:GetPossibleTargetsOrderedList
 function! s:GetPossibleTargetsOrderedList(name) abort
   let targetlist = []
   let targetdict = s:GetPossibleTargetsDict(a:name)
@@ -374,7 +369,7 @@ function! s:GetPossibleTargetsOrderedList(name) abort
   return targetlist
 endfun
 
-" s:GetTargetInfo {{{2
+" s:GetTargetInfo
 function! s:GetTargetInfo(target) abort
   let tlen = strlen(a:target)
   let elen = strlen(s:ext)
@@ -385,7 +380,7 @@ function! s:GetTargetInfo(target) abort
   return ret
 endfun
 
-" s:PromptForTarget {{{2
+" s:PromptForTarget
 function! s:PromptForTarget(choices, ...) abort
   let options  = a:0 ? a:1 : {}
   let prompt   = get(options, 'prompt', "Choose new file path:")
@@ -415,7 +410,7 @@ function! s:PromptForTarget(choices, ...) abort
   return target
 endfun
 
-" s:EnsurePathExists {{{2
+" s:EnsurePathExists
 function! s:EnsurePathExists(target) abort
   let path = matchstr(a:target, '.*'.s:dirsep)
   if path != '' && !isdirectory(path)
@@ -435,7 +430,7 @@ function! s:EnsurePathExists(target) abort
   endif
 endfun
 
-" s:InsertLinkCode {{{2
+" s:InsertLinkCode
 function! s:InsertLinkCode(name, target) abort
   " TODO: test and improve escaping?
   let escaped_name = escape(a:name, '\*^$')
@@ -453,7 +448,7 @@ function! s:InsertLinkCode(name, target) abort
   call setline('.', line)
 endfun
 
-" s:JoinPath {{{2
+" s:JoinPath
 function! s:JoinPath(path, file) abort
   if a:path[strlen(a:path)-1] == s:dirsep
         \ || a:file[0] == s:dirsep
@@ -463,7 +458,7 @@ function! s:JoinPath(path, file) abort
   endif
 endfun
 
-" s:IsSubdirOf {{{2
+" s:IsSubdirOf
 function! s:IsSubdirOf(subdir, parent) abort
   " normalized paths
   let nsubdir   = s:ChompDirSep(a:subdir).s:dirsep
@@ -474,7 +469,7 @@ function! s:IsSubdirOf(subdir, parent) abort
   return is_subdir
 endfun
 
-" s:IsAtDir {{{2
+" s:IsAtDir
 function! s:IsAtDir(dir1, dir2) abort
   " normalized paths
   let ndir1 = s:ChompDirSep(a:dir1).s:dirsep
@@ -484,7 +479,7 @@ function! s:IsAtDir(dir1, dir2) abort
   return is_at_dir
 endfun
 
-" s:IsMatchingWikiPattern {{{2
+" s:IsMatchingWikiPattern
 function! s:IsMatchingWikiPattern(file) abort
   for pat in s:wiki_patterns
     if a:file =~ pat
@@ -494,7 +489,7 @@ function! s:IsMatchingWikiPattern(file) abort
   return 0
 endfun
 
-" s:GetBufferWikiRoot {{{2
+" s:GetBufferWikiRoot
 function! s:GetBufferWikiRoot(file) abort
   let abspath = fnamemodify(a:file, ':p:h')
   for root in s:wiki_roots
@@ -506,12 +501,12 @@ function! s:GetBufferWikiRoot(file) abort
   return ""
 endfun
 
-" s:IsUnderWikiRoot {{{2
+" s:IsUnderWikiRoot
 function! s:IsUnderWikiRoot(file) abort
   return (s:GetBufferWikiRoot(a:file) != "")
 endfun
 
-" s:IsAtWikiRoot {{{2
+" s:IsAtWikiRoot
 function! s:IsPathAtWikiRoot(path) abort
   for root in s:wiki_roots
     let absroot = fnamemodify(root, ':p')
@@ -522,7 +517,7 @@ function! s:IsPathAtWikiRoot(path) abort
   return 0
 endfun
 
-" s:ChompDirSep {{{2
+" s:ChompDirSep
 function! s:ChompDirSep(str) abort
   let l = strchars(a:str)
   let ret = a:str
@@ -532,7 +527,7 @@ function! s:ChompDirSep(str) abort
   return ret
 endfun
 
-" s:Dbg {{{2
+" s:Dbg
 function! s:Dbg(msg, ...) abort
   if g:wiki_debug
     let m = a:msg
